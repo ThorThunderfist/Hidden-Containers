@@ -1,5 +1,5 @@
 // Helm & Cloak
-//// Painting - Helm of Balduran
+//   Painting - Helm of Balduran
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 90
@@ -9,7 +9,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Three Old Kegs
-//// Painting - Skull of Kereph
+//   Painting - Skull of Kereph
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 80
@@ -20,7 +20,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Durlag's Basement
-//// Buried Chest - Star Sapphire, Ring of Protection
+//   Buried Chest - Star Sapphire, Ring of Protection
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 40
@@ -30,7 +30,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Durlag's 2
-//// Wall Vault - Scrolls
+//   Wall Vault - Scrolls
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 50
@@ -40,10 +40,10 @@ LAF HIDE_CONTAINERS
 END
 
 // Durlag's 4
-//// Forge - Wardstone, Magic Ammo, Potions
-//// Shrooms 1 - Potions
-//// Shrooms 2 - Bracers of Defense AC 8
-//// Shrooms 3 - Potions
+//   Forge - Wardstone, Magic Ammo, Potions
+//   Shrooms 1 - Potions
+//   Shrooms 2 - Bracers of Defense AC 8
+//   Shrooms 3 - Potions
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 45
@@ -59,7 +59,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Candlekeep (Prologue)
-//// Hay Bale - Phlydia's Book
+//   Hay Bale - Phlydia's Book
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 5
@@ -70,7 +70,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Candlekeep
-//// Pillow - Gold
+//   Pillow - Gold
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 15
@@ -80,7 +80,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Candlekeep (Chapter 6)
-//// Hay Bale - Phlydia's Book
+//   Hay Bale - Phlydia's Book
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 5
@@ -91,7 +91,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Shipwreck Coast
-//// Shipwreck - Ring of Folly
+//   Shipwreck - Ring of Folly
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 25
@@ -102,7 +102,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Black Alaric's Cave
-//// Buried Treasure - Con Tome, Cloak of the Wolf, Potions, Wand of Paralyzation
+//   Buried Treasure - Con Tome, Cloak of the Wolf, Potions, Wand of Paralyzation
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 85
@@ -113,7 +113,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Cloudpeaks
-//// Waterfall - Dead Cat
+//   Waterfall - Dead Cat
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 25

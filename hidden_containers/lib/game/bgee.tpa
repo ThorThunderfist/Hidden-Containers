@@ -1,5 +1,5 @@
 // Durlag's Roof
-//// Chimney - Rashad's Talon
+//   Chimney - Rashad's Talon
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 40
@@ -9,7 +9,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Durlag's 1
-//// Hollow Post - Misc Magic
+//   Hollow Post - Misc Magic
 LAF HIDE_CONTAINERS
 	INT_VAR
 		rename_index_0  = 20
@@ -20,7 +20,7 @@ LAF HIDE_CONTAINERS
 END
 
 // SW Baldur's Gate
-//// Fountain - Aquamarine
+//   Fountain - Aquamarine
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 25
@@ -30,7 +30,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Balduran's Ship
-//// Cannon - Misc Magic
+//   Cannon - Misc Magic
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 60
@@ -40,7 +40,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Balduran's Ship
-//// Cannon 2 - Magic Ammo
+//   Cannon 2 - Magic Ammo
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 55
@@ -50,7 +50,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Friendly Arm Inn
-//// Tree Hole - Ring of Wizardry
+//   Tree Hole - Ring of Wizardry
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 75
@@ -60,7 +60,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Lion's Way
-//// Tree - Diamond
+//   Tree - Diamond
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 25
@@ -70,7 +70,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Coast Way
-//// Rock Hole - Ring of Protection +1
+//   Rock Hole - Ring of Protection +1
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 50
@@ -80,7 +80,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Lonely Peaks
-//// Rock - Water Opal
+//   Rock - Water Opal
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 20
@@ -90,7 +90,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Nashkel
-//// Farm Hole - Ankheg Plate
+//   Farm Hole - Ankheg Plate
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 50
@@ -100,7 +100,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Fire Leaf Forest
-//// Grove Hole - Cloudkill Scroll
+//   Grove Hole - Cloudkill Scroll
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 60
@@ -110,7 +110,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Nashkel Mines
-//// Stump Hole - Wand of Frost
+//   Stump Hole - Wand of Frost
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 40
@@ -120,7 +120,7 @@ LAF HIDE_CONTAINERS
 END
 
 // Gibberling Mountains
-//// Cliff Hole - Ring of Fire Resistance, Star Sapphire
+//   Cliff Hole - Ring of Fire Resistance, Star Sapphire
 LAF HIDE_CONTAINERS
 	INT_VAR
 		detect_0        = 75
