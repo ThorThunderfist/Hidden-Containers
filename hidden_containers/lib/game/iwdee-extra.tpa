@@ -1,0 +1,156 @@
+// Vale of Shadows - Minor Tomb
+//   Statue - Gate key, potion of healing, scrolls
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 15
+	STR_VAR
+		area            = ~AR3101~
+		container_0     = ~Statue~
+END
+
+// Dragon's Eye 1
+//   Snake Idol - Random item, scrolls
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 40
+	STR_VAR
+		area            = ~AR4001~
+		container_0     = ~Snake Idol~
+END
+
+// Dragon's Eye 4
+//   Yxunomei Statue - Potions
+//   Yxunomei Statue - Blur Deck, Potions
+//   Cushions - Potions
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 45
+		detect_1        = 45
+	STR_VAR
+		area            = ~AR4004~
+		container_0     = ~Yxunomei Statue 1~
+		container_1     = ~Yxunomei Statue 2~
+		container_2     = ~Cushions~
+END
+
+// Dragon's Eye 5
+//   Throne - Darkened Glory, Studded Leather Armor +2, Pearl Necklace
+//   Pillows - Arrow +1
+//   Pillows - Arrow +2
+//   Pillows - Potions of extra healing
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 45
+		detect_1        = 15
+		detect_2        = 15
+		detect_3        = 15
+	STR_VAR
+		area            = ~AR4005~
+		container_0     = ~Throne~
+		container_1     = ~Pillow 1~
+		container_2     = ~Pillow 2~
+		container_3     = ~Pillow 3~
+END
+
+// Severed Hand 1
+//   Chair Pile - Piece of broken machinery
+//   Chair Pile - Gold
+//   Rubble - Random item
+//   Chair Pile - Random item
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 15
+		detect_1        = 15
+		detect_2        = 35
+		detect_3        = 15
+	STR_VAR
+		area            = ~AR5001~
+		container_0     = ~Container 4~
+		container_1     = ~Container 6~
+		container_2     = ~Container 7~
+		container_3     = ~Container 8~
+END
+
+// Severed Hand 2
+//   Chair Pile - Random item
+//   Chair Pile - Random item
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 15
+		detect_1        = 15
+	STR_VAR
+		area            = ~AR5002~
+		container_0     = ~Container 3~
+		container_1     = ~Container 4~
+END
+
+// Severed Hand 3
+//   Chair Pile - Random item
+//   Chair Pile - Misery's Herald
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 15
+		detect_1        = 15
+	STR_VAR
+		area            = ~AR5003~
+		container_0     = ~Container 1~
+		container_1     = ~Container 2~
+END
+
+// Severed Hand - Corellon 1
+//   Chair Pile - Random item
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 15
+	STR_VAR
+		area            = ~AR5301~
+		container_0     = ~Container 1~
+END
+
+// Wyrm's Tooth - Frost Giant Cave
+//   Kontik Hut - Barrel of Pure Water, Chain Lightning scroll, Globe of Invulnerability scroll
+//   Kontik Hut - Fireshield (Blue) scroll, Otiluke's Freezing Sphere scroll, potions
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 20
+		detect_0        = 35
+	STR_VAR
+		area            = ~AR7004~
+		container_0     = ~Hut 1~
+		container_0     = ~Hut 2~
+END
+
+// Lower Dorn's Deep - Malavon's lair
+//   Malavon's Throne - Random item
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 75
+	STR_VAR
+		area            = ~AR8010~
+		container_0     = ~Malavon Throne~
+END
+
+// Sea of Moving Ice - Cave Entrance
+//   Skeleton - Flaming Oil, random item
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 30
+	STR_VAR
+		area            = ~AR9601~
+		container_0     = ~Container 1~
+END
+
+
+// 2200 (ioun squirrel)
+COPY
+	~hidden_containers/bmp~ override
+	~hidden_containers/bam~ override
+	~hidden_containers/eff~ override
+	~hidden_containers/vvc~ override
+	~hidden_containers/cre~ override
+COPY
+	~hidden_containers/itm/TFHCIOUN.ITM~ override
+	SAY NAME2 @0
+	SAY IDENTIFIED_DESC @1
+
+EXTEND_BOTTOM ~AR5304.BCS~ ~hidden_containers/baf/TFHCIDSQ.BAF~

@@ -1,0 +1,57 @@
+// Temple of Myrkul
+//   Skeleton - Mundane loot
+//   Skeleton - Invisibility scroll
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 20
+		detect_1        = 15
+		rename_index_0  = 2
+		rename_index_1  = 3
+	STR_VAR
+		area            = ~AR3301~
+		container_0     = ~Hidden Skeleton 1~
+		container_1     = ~Hidden Skeleton 2~
+END
+
+// Tomb of Kresselack 2
+//   Skeleton - Black Wolf Talisman
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 20
+	STR_VAR
+		area            = ~AR3502~
+		container_0     = ~Skeleton~
+END
+
+// Wyrm's Tooth - Frost Giant Cave
+//   Wyrm Hoard - Longbow of Marksmanship, Mithral Field Plate, Citern of War
+//   Wyrm Hoard - Gems
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 45
+		detect_0        = 65
+	STR_VAR
+		area            = ~AR7004~
+		container_0     = ~Lair 1~
+		container_0     = ~Lair 2~
+END
+
+// Lonelywood - Whistling Gallows 2
+//   Floorboard - Translocation Arrows, Rogue Stone
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 60
+	STR_VAR
+		area            = ~AR9102~
+		container_0     = ~Container 5~
+END
+
+// Sea of Moving Ice - Field of Bones
+//   Hole - King's Tears, Emerald
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 40
+	STR_VAR
+		area            = ~AR9602~
+		container_0     = ~Container 4~
+END

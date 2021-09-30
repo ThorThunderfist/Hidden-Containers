@@ -1,0 +1,7 @@
+IF
+	Global("SQUIRRELS_VIS","MYAREA",1)
+THEN
+	RESPONSE #100
+		SetGlobal("SQUIRRELS_VIS","MYAREA",2)
+		CreateCreature("TFHCSQRL", [376.730], S)
+END
