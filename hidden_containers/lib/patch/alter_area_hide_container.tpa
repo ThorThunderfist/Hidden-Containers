@@ -1,0 +1,659 @@
+// Lovingly adapted from the built-in macro in fj_are_struct.tpa
+// Thank you WeiDU developers!
+
+DEFINE_PATCH_FUNCTION ALTER_AREA_HIDE_CONTAINER
+	INT_VAR
+		// internal variables
+		is_bg2               = ENGINE_IS ~soa tob pstee~ OR FILE_EXISTS_IN_GAME monkfist.2da
+		is_pst               = ENGINE_IS pst
+		is_id2               = ENGINE_IS iwd2
+		fj_position          = 0x11c
+		fj_itm_idx           = 0
+		fj_vertex_idx        = 0
+		off                  = 0
+		num                  = 0
+		off1                 = 0
+		num1                 = 0
+		key                  = 0
+		value                = 0
+		key1                 = 0
+		value1               = 0
+		fj_return_offset     = 0
+		fj_deleted           = 0
+
+		container_index   = 0
+		container_coord   = 0
+		container_l_t     = 0
+		container_r_b     = 0
+
+		// spams your console with psuedoinformative nonsense
+		fj_debug             = 0
+
+		// Hidden container detection difficulty
+		fj_detect_diff       = 0
+
+	STR_VAR
+		// internal variable
+		fj_structure_type    = ~~
+
+		// Required, name of the container to hide
+		container_name    = ~~
+
+	RET
+		fj_return_offset
+
+BEGIN
+	// php over this array rather than an explicit list to reduce code length and typos
+	CLEAR_ARRAY struct
+	TEXT_SPRINT $struct(0x54 0x58 0x02 0x110) actor
+	TEXT_SPRINT $struct(0x5c 0x5a 0x02 0x0c4) region
+	TEXT_SPRINT $struct(0x60 0x64 0x04 0x0c8) spawn
+	TEXT_SPRINT $struct(0x68 0x6c 0x04 0x068) entrance
+	TEXT_SPRINT $struct(0x70 0x74 0x02 0x0c0) container
+	TEXT_SPRINT $struct(0x78 0x76 0x02 0x014) itm
+	TEXT_SPRINT $struct(0x84 0x82 0x02 0x0d4) ambient
+	TEXT_SPRINT $struct(0x88 0x8c 0x02 0x054) variable
+	TEXT_SPRINT $struct(0xa8 0xa4 0x04 0x0c8) door
+	TEXT_SPRINT $struct(0xb8 0xb4 0x04 0x06c) tiled
+	TEXT_SPRINT $struct(0x7c 0x80 0x02 0x004) vertex
+	TEXT_SPRINT $struct(0xb0 0xac 0x04 0x04c) animation
+	TEXT_SPRINT $struct(0xa0 0x9c 0x04 0x000) bitmask
+	TEXT_SPRINT $struct(0xbc 0x00 0x00 0x090) songs
+	TEXT_SPRINT $struct(0xc0 0x00 0x00 0x0e4) interrupts
+	PATCH_IF is_pst BEGIN
+		TEXT_SPRINT $struct(0xc8 0xcc 0x04 0x214) note
+	END ELSE BEGIN
+		TEXT_SPRINT $struct(0xc4 0xc8 0x04 0x034) note
+		TEXT_SPRINT $struct(0xcc 0xd0 0x04 0x01c) projectile
+	END
+	PHP_EACH struct AS key => value BEGIN
+		PATCH_IF ~%value%~ STRING_EQUAL_CASE ~door~ BEGIN
+			SET fj_structure_type = key_0
+		END
+	END
+
+	// Icewind Dale II decided to be uselessly special
+	PATCH_IF is_id2 BEGIN
+		READ_ASCII   0x54 id2_header (0x10)
+		DELETE_BYTES 0x54 0x10
+		PATCH_FOR_EACH off IN
+			0x54 0x5c 0x60 0x68 0x70 0x78 0x7c 0x84 0x88 0xa0 0xa8 0xb0 0xb8 0xbc 0xc0
+		BEGIN
+			PATCH_IF LONG_AT off BEGIN
+				WRITE_LONG off THIS - 0x10
+			END
+		END
+	END
+
+	// long block to read all the existing data
+	PATCH_IF fj_debug BEGIN PATCH_PRINT ~Beginning unmarshalling.~ END
+	PHP_EACH struct AS key => value BEGIN
+		PATCH_IF( LONG_AT key_0 )BEGIN // skip it if the header offset points at 0
+			CLEAR_ARRAY EVAL ~%value%~
+			GET_OFFSET_ARRAY EVAL ~%value%~ key_0 0x04 key_1 key_2 0x00 0x00 key_3 // e.g. $region
+			PHP_EACH ~%value%~ AS num => off BEGIN
+				CLEAR_ARRAY array
+
+				PATCH_IF( key_0 == 0x54 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading actor %num%.~ END
+					PATCH_IF!( LONG_AT (off + 0x28) & 0x01 )BEGIN
+						PATCH_IF fj_debug BEGIN PATCH_PRINT ~  Associating embedded creature.~ END
+						READ_ASCII LONG_AT (off + 0x88) $are_embedded_cre(~%num%~) (LONG_AT (off + 0x8c))
+					END
+					WRITE_LONG off + 0x88 0
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				PATCH_IF( key_0 == 0x5c )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading region %num%.~ END
+					PATCH_IF( fj_debug && SHORT_AT ( off + 0x2a ) )BEGIN PATCH_PRINT ~  Associating vertices.~ END
+					GET_OFFSET_ARRAY2 array off ARE_V10_REGION_VERTICES
+					PHP_EACH array AS num1 => off1 BEGIN
+						READ_LONG off1 $EVAL ~are_region_%num%_vertex~(~%num1%~)
+					END
+					CLEAR_ARRAY array
+					WRITE_LONG off + 0x2c 0x00
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				PATCH_IF( key_0 == 0x60 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading spawn %num%~ END
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				PATCH_IF( key_0 == 0x68 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading entrance %num%~ END
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				PATCH_IF( key_0 == 0x70 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading container %num%.~ END
+
+					// load container vertices
+					GET_OFFSET_ARRAY2 array off ARE_V10_CONTAINER_VERTICES
+					PATCH_IF( fj_debug && LONG_AT ( off + 0x54 ) )BEGIN PATCH_PRINT ~  Associating vertices.~ END
+					PHP_EACH array AS num1 => off1 BEGIN
+						READ_LONG off1 $EVAL ~are_container_%num%_vertex~(~%num1%~)
+					END
+					CLEAR_ARRAY array
+
+					// load container items
+					GET_OFFSET_ARRAY2 array off ARE_V10_ITEMS
+					PATCH_IF( fj_debug && LONG_AT ( off + 0x44 ) )BEGIN PATCH_PRINT ~  Associating items.~ END
+					PHP_EACH array AS num1 => off1 BEGIN
+						READ_ASCII off1 $EVAL ~are_container_%num%_itm~(~%num1%~) (0x14)
+					END
+					CLEAR_ARRAY array
+
+					// read container structure
+					WRITE_LONG off + 0x40 0x00 // wipe item index
+					WRITE_LONG off + 0x44 0x00 // wipe item count
+					WRITE_LONG off + 0x50 0x00 // wipe vertex index
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				// items are read off with their associated containers
+				PATCH_IF( key_0 == 0x78 )BEGIN
+				END ELSE
+
+				PATCH_IF( key_0 == 0x84 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading ambient %num%~ END
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				PATCH_IF( key_0 == 0x88 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading variable %num%~ END
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				PATCH_IF( key_0 == 0xa8 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading door %num% and associated vertices.~ END
+					// load door open vertices
+					GET_OFFSET_ARRAY2 array off ARE_V10_DOOR_OPEN_OUTLINE_VERTICES
+					PHP_EACH array AS num1 => off1 BEGIN
+						READ_LONG off1 $EVAL ~are_door_open_%num%_vertex~(~%num1%~)
+					END
+					CLEAR_ARRAY array
+					WRITE_LONG off + 0x2c 0x00
+					// load door closed vertices
+					GET_OFFSET_ARRAY2 array off ARE_V10_DOOR_CLOSED_OUTLINE_VERTICES
+					PHP_EACH array AS num1 => off1 BEGIN
+						READ_LONG off1 $EVAL ~are_door_closed_%num%_vertex~(~%num1%~)
+					END
+					CLEAR_ARRAY array
+					WRITE_LONG off + 0x34 0x00
+					// load cell open vertices
+					GET_OFFSET_ARRAY2 array off ARE_V10_DOOR_OPEN_CELL_VERTICES
+					PHP_EACH array AS num1 => off1 BEGIN
+						READ_LONG off1 $EVAL ~are_cell_open_%num%_vertex~(~%num1%~)
+					END
+					CLEAR_ARRAY array
+					WRITE_LONG off + 0x48 0x00
+					// load cell closed vertices
+					GET_OFFSET_ARRAY2 array off ARE_V10_DOOR_CLOSED_CELL_VERTICES
+					PHP_EACH array AS num1 => off1 BEGIN
+						READ_LONG off1 $EVAL ~are_cell_closed_%num%_vertex~(~%num1%~)
+					END
+					CLEAR_ARRAY array
+					WRITE_LONG off + 0x50 0x00
+					// read the door structure itself
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				PATCH_IF( key_0 == 0xb8 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading tiled object %num% (something is probably very wrong).~ END
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				// vertices, these are read off with their associated regions/containers/doors
+				PATCH_IF( key_0 == 0x78 )BEGIN
+				END ELSE
+
+				PATCH_IF( key_0 == 0xb0 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading animation %num%.~ END
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				PATCH_IF(
+					( key_0 == 0xc4 && is_bg2 ) ||
+					( key_0 == 0xc8 && is_pst)
+				)BEGIN //
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading map note %num%.~ END
+					READ_ASCII off $EVAL ~are_%value%~(~%num%~) (key_3)
+				END ELSE
+
+				PATCH_IF( key_0 == 0xcc && is_bg2 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading projectile %num%.~ END
+					READ_ASCII off $are_projectile(~%num%~) (key_3)
+					PATCH_IF SHORT_AT (off + 0x0c) BEGIN
+						PATCH_IF( fj_debug )BEGIN PATCH_PRINT ~  Associating v2 embedded effects.~ END
+						READ_ASCII LONG_AT (off + 0x08) $are_embedded_eff(~%num%~) (SHORT_AT (off + 0x0c))
+					END
+				END
+
+			END // php_each ~%value%~
+			CLEAR_ARRAY array
+			CLEAR_ARRAY EVAL ~%value%~
+
+			// single structures
+
+			// bitmask
+			PATCH_IF( key_0 == 0xa0 )BEGIN
+				PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading bitmask (should only exist in saved game areas).~ END
+				READ_ASCII LONG_AT 0xa0 $are_bitmask(0) (LONG_AT 0x9c)
+			END ELSE
+
+			// songs
+			PATCH_IF( key_0 == 0xbc )BEGIN
+				PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading songs (obligatory structure).~ END
+				READ_ASCII LONG_AT 0xbc $are_songs(0) (0x90)
+			END ELSE
+
+			// rest interrupts
+			PATCH_IF( key_0 == 0xc0 )BEGIN
+				PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reading rest interrupt table (obligatory structure).~ END
+				READ_ASCII LONG_AT 0xc0 $are_interrupts(0) (0xe4)
+			END
+
+		END // skip if key_0 points to 0
+	END // end php_each $structure: all extended structures now loaded in buffer
+
+	PATCH_IF fj_debug BEGIN PATCH_PRINT ~Trimming %SOURCE_FILE% down to the header.~ END
+	DELETE_BYTES 0x11c BUFFER_LENGTH - 0x11c
+	PHP_EACH struct AS key => value BEGIN
+		PATCH_IF( key_2 == 0x02 )BEGIN
+			WRITE_SHORT key_1 0x00
+		END ELSE
+		PATCH_IF( key_2 == 0x04 )BEGIN
+			WRITE_LONG  key_1 0x00
+		END
+	END
+
+	PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reassembling %SOURCE_FILE%.~ END
+	PHP_EACH struct AS key => value BEGIN
+		WRITE_LONG key_0 fj_position
+		PHP_EACH ~are_%value%~ AS key1 => value1 BEGIN
+			PATCH_IF( key_0 != 0xa0 && key_0 != 0xbc && key_0 != 0xc0 )BEGIN
+				PATCH_IF( key1 != ` 0 || fj_structure_type != key_0 )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reinserting %value% number %key1%.~ END
+					PATCH_IF( key_2 == 0x02 )BEGIN
+						WRITE_SHORT key_1 THIS + 0x01
+					END ELSE
+					PATCH_IF( key_2 == 0x04 )BEGIN
+						WRITE_LONG  key_1 THIS + 0x01
+					END
+					INSERT_BYTES fj_position key_3
+					WRITE_ASCIIE fj_position ~%value1%~
+
+					PATCH_IF( key_0 == 0x70 )BEGIN
+						READ_ASCII fj_position container_name_temp (32) NULL
+
+						// Disable the container being hidden and register the container values for door creation
+						PATCH_IF ("%container_name_temp%" STRING_COMPARE_CASE "%container_name%" = 0) BEGIN
+							PATCH_IF fj_debug BEGIN PATCH_PRINT ~Disabling %value% number %key1%.~ END
+							SET container_index = key1
+							READ_LONG (fj_position + 0x20) container_coord
+							READ_LONG (fj_position + 0x38) container_l_t
+							READ_LONG (fj_position + 0x3c) container_r_b
+	
+							WRITE_BYTE  (fj_position + 0x28) THIS | BIT5
+						END
+					END
+
+					SET fj_position += key_3
+				END
+			END ELSE
+			PATCH_IF( key_0 == 0xa0 && fj_structure_type != key_0 )BEGIN
+				PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reinserting %value% number %key1%.~ END
+				TEXT_SPRINT  value1      $are_bitmask(0)
+				WRITE_LONG   0x9c        STRING_LENGTH EVAL ~%value1%~
+				INSERT_BYTES fj_position LONG_AT 0x9c
+				WRITE_ASCIIE fj_position ~%value1%~
+				SET fj_position += LONG_AT 0x9c
+			END ELSE
+			PATCH_IF( key_0 == 0xbc && fj_structure_type != key_0 )BEGIN
+				PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reinserting %value% number %key1%.~ END
+				INSERT_BYTES fj_position key_3
+				WRITE_ASCIIE fj_position ~%value1%~
+				SET fj_position += key_3
+			END ELSE
+			PATCH_IF( key_0 == 0xc0 && fj_structure_type != key_0 )BEGIN
+				PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reinserting %value% number %key1%.~ END
+				INSERT_BYTES fj_position key_3
+				WRITE_ASCIIE fj_position ~%value1%~
+				SET fj_position += key_3
+			END
+		END // PHP_EACH $EVAL ~are_%value%~
+
+		// add new structure
+		PATCH_IF( key_0 == fj_structure_type && key_0 != 0x78 )BEGIN
+			PATCH_IF fj_debug BEGIN PATCH_PRINT ~Adding new %value% structure.~ END
+			PATCH_IF( key_2 == 0x02 )BEGIN
+				WRITE_SHORT key_1 THIS + 0x01
+			END ELSE PATCH_IF( key_2 == 0x04 )BEGIN
+				WRITE_LONG  key_1 THIS + 0x01
+			END
+			SET fj_return_offset = fj_position
+			INSERT_BYTES fj_position key_3
+			SET fj_position += key_3
+
+			// New secret door for detecting a hidden container
+			PATCH_IF( fj_structure_type == 0xa8 )BEGIN
+				WRITE_ASCIIE fj_return_offset + 0x00 ~TF%container_name%~ #32
+				WRITE_LONG   fj_return_offset + 0x28 0b10101000
+				WRITE_LONG   fj_return_offset + 0x40 container_l_t
+				WRITE_LONG   fj_return_offset + 0x44 container_r_b
+				WRITE_ASCIIE fj_return_offset + 0x58 ~TFSILENT~ #8
+				WRITE_ASCIIE fj_return_offset + 0x60 ~TFSILENT~ #8
+				WRITE_LONG   fj_return_offset + 0x68 0x02    // Cursor index
+				WRITE_LONG   fj_return_offset + 0x88 fj_detect_diff
+				WRITE_LONG   fj_return_offset + 0x94 container_coord
+				WRITE_LONG   fj_return_offset + 0x98 ` 0
+				WRITE_LONG   fj_return_offset + 0xb4 ` 0
+
+				PHP_EACH ~are_container_%container_index%_vertex~ AS key1 => value1 BEGIN
+					WRITE_SHORT fj_return_offset + 0x32 THIS + 0x01
+				END
+			END
+		END
+
+		// add items and index to their containers
+		PATCH_IF( key_0 == 0x78 )BEGIN
+			/* Delete once, even if num1 + index equal the mode of a subsequent item */
+			fl#fj_are_structure#itm#state = 1
+			PHP_EACH are_container AS num => structure BEGIN
+				PATCH_IF( fj_structure_type == 0x70 && num == ` 0 && fj_deleted == 0x00 )BEGIN
+					SET fj_deleted = 0x01
+				END ELSE BEGIN
+					WRITE_LONG LONG_AT 0x70 + 0xc0 * ( num - fj_deleted ) + 0x40 fj_itm_idx
+					PHP_EACH ~are_container_%num%_itm~ AS num1 => value1 BEGIN
+						PATCH_IF(
+							( fj_structure_type != 0x78 ) ||
+							( ` 0 != num1 + LONG_AT ( LONG_AT 0x70 + 0xc0 * ( num - fj_deleted ) + 0x40 ) ||
+							!fl#fj_are_structure#itm#state )
+						)BEGIN
+							PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reassociating item %num1% to container %num%.~ END
+							WRITE_LONG LONG_AT 0x70 + 0xc0 * ( num - fj_deleted ) + 0x44 THIS + 0x01
+							INSERT_BYTES fj_position 0x14
+							WRITE_ASCIIE fj_position ~%value1%~
+							WRITE_SHORT  0x76 THIS + 0x01
+							SET ++ fj_itm_idx
+							SET fj_position += key_3
+						END ELSE fl#fj_are_structure#itm#state = 0
+					END
+				END
+				PATCH_IF( ` 0 == num && fj_structure_type == 0x78 )BEGIN
+					READ_LONG LONG_AT 0x70 + 0xc0 * num + 0x44 cnt
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Adding new item to container %num%.~ END
+					WRITE_LONG LONG_AT 0x70 + 0xc0 * num + 0x44 THIS + 0x01
+					WRITE_SHORT  0x76 THIS + 0x01
+					INSERT_BYTES fj_position key_3
+					WRITE_ASCIIE fj_position + 0x00 ~%fj_name%~ #8
+					WRITE_SHORT  fj_position + 0x08 fj_itm_expiry
+					WRITE_SHORT  fj_position + 0x0a fj_charge0
+					WRITE_SHORT  fj_position + 0x0c fj_charge1
+					WRITE_SHORT  fj_position + 0x0e fj_charge2
+					WRITE_LONG   fj_position + 0x10 fj_flags
+					SET ++ fj_itm_idx
+					SET fj_position  += key_3
+				END
+			END // php $are_container
+			SET fj_deleted = 0x00
+			PHP_EACH are_container AS key => value BEGIN
+				CLEAR_ARRAY EVAL ~are_container_%key%_itm~
+			END
+		END
+		// after existing and new items have been added, index new containers
+		PATCH_IF( fj_structure_type == 0x70 )BEGIN
+			WRITE_LONG fj_return_offset + 0x40 fj_itm_idx
+		END
+
+		// add vertices
+		PATCH_IF( key_0 == 0x7c )BEGIN
+
+			// vertices associated with regions
+			PHP_EACH are_region    AS num => structure BEGIN
+				PATCH_IF( fj_structure_type == 0x5c && num == ` 0 && fj_deleted == 0x00 )BEGIN
+					SET fj_deleted = 0x01
+				END ELSE BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reassociating vertices to region %num%.~ END
+					WRITE_LONG LONG_AT 0x5c + 0xc4 * ( num - fj_deleted ) + 0x2c fj_vertex_idx
+					PHP_EACH ~are_region_%num%_vertex~ AS num1 => value1 BEGIN
+						INSERT_BYTES fj_position 0x04
+						WRITE_LONG   fj_position value1
+						WRITE_SHORT  0x80        THIS + 0x01
+						SET ++fj_vertex_idx
+						SET fj_position += key_3
+					END
+				END
+			END
+			SET fj_deleted = 0x00
+			PATCH_IF( fj_structure_type == 0x5c )BEGIN
+				PATCH_IF fj_debug BEGIN PATCH_PRINT ~Adding vertices to new region.~ END
+				WRITE_LONG fj_return_offset + 0x2c fj_vertex_idx
+				PHP_EACH fj_vertex AS num => off BEGIN
+					INSERT_BYTES fj_position 0x04
+					WRITE_SHORT  0x80        THIS + 0x01
+					SET ++fj_vertex_idx
+				END
+				PHP_EACH fj_vertex AS num => off BEGIN
+					WRITE_LONG fj_position off
+					SET fj_position += 0x04
+				END
+			END
+			PHP_EACH are_region    AS num => structure BEGIN
+				CLEAR_ARRAY EVAL ~are_region_%num%_vertex~
+			END
+
+			// vertices associated with containers
+			PHP_EACH are_container AS num => structure BEGIN
+				PATCH_IF( fj_structure_type == 0x70 && num == ` 0 && fj_deleted == 0x00 )BEGIN
+					SET fj_deleted = 0x01
+				END ELSE BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reassociating vertices to container %num%.~ END
+					WRITE_LONG LONG_AT 0x70 + 0xc0 * ( num - fj_deleted ) + 0x50 fj_vertex_idx
+					PHP_EACH ~are_container_%num%_vertex~ AS num1 => value1 BEGIN
+						INSERT_BYTES fj_position 0x04
+						WRITE_LONG   fj_position value1
+						WRITE_SHORT  0x80        THIS + 0x01
+						SET ++fj_vertex_idx
+						SET fj_position += 0x04
+					END
+				END
+			END
+			SET fj_deleted = 0x00
+			PATCH_IF fj_structure_type == 0x70 BEGIN
+				PATCH_IF fj_debug BEGIN PATCH_PRINT ~Adding vertices to new container.~ END
+				WRITE_LONG fj_return_offset + 0x50 fj_vertex_idx
+				PHP_EACH fj_vertex AS num => off BEGIN
+					SET ++fj_vertex_idx
+					INSERT_BYTES fj_position 0x04
+					WRITE_SHORT  0x80 THIS + 0x01
+				END
+				PHP_EACH fj_vertex AS num => off BEGIN
+					WRITE_LONG fj_position off
+					SET fj_position += 0x04
+				END
+			END
+
+			// vertices associated with doors
+			PHP_EACH are_door      AS num => structure BEGIN
+				PATCH_IF( fj_structure_type == 0xa8 && num == ` 0 && fj_deleted == 0x00 )BEGIN
+					SET fj_deleted = 0x01
+				END ELSE BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reassociating vertices to door %num%.~ END
+					WRITE_LONG LONG_AT 0xa8 + 0xc8 * ( num - fj_deleted ) + 0x2c fj_vertex_idx
+					PHP_EACH ~are_door_open_%num%_vertex~ AS num1 => value1 BEGIN
+						INSERT_BYTES fj_position 0x04
+						WRITE_LONG   fj_position value1
+						SET ++fj_vertex_idx
+						SET fj_position += 0x04
+						WRITE_SHORT  0x80 THIS + 0x01
+					END
+					WRITE_LONG LONG_AT 0xa8 + 0xc8 * ( num - fj_deleted ) + 0x34 fj_vertex_idx
+					PHP_EACH ~are_door_closed_%num%_vertex~ AS num1 => value1 BEGIN
+						INSERT_BYTES fj_position 0x04
+						WRITE_LONG   fj_position value1
+						SET ++fj_vertex_idx
+						SET fj_position += 0x04
+						WRITE_SHORT  0x80 THIS + 0x01
+					END
+					WRITE_LONG LONG_AT 0xa8 + 0xc8 * ( num - fj_deleted ) + 0x48 fj_vertex_idx
+					PHP_EACH ~are_cell_open_%num%_vertex~ AS num1 => value1 BEGIN
+						INSERT_BYTES fj_position 0x04
+						WRITE_LONG   fj_position value1
+						SET ++fj_vertex_idx
+						SET fj_position += 0x04
+						WRITE_SHORT  0x80 THIS + 0x01
+					END
+					WRITE_LONG LONG_AT 0xa8 + 0xc8 * ( num - fj_deleted ) + 0x50 fj_vertex_idx
+					PHP_EACH ~are_cell_closed_%num%_vertex~ AS num1 => value1 BEGIN
+						INSERT_BYTES fj_position 0x04
+						WRITE_LONG   fj_position value1
+						SET ++fj_vertex_idx
+						SET fj_position += 0x04
+						WRITE_SHORT  0x80 THIS + 0x01
+					END
+				END
+			END
+			SET fj_deleted = 0x00
+			PATCH_FOR_EACH value1 IN
+				door_open door_closed cell_open cell_closed
+			BEGIN
+				CLEAR_ARRAY EVAL ~are_%value1%_%num%_vertex~
+			END
+			PATCH_IF( fj_structure_type == 0xa8 )BEGIN
+				PATCH_IF fj_debug BEGIN PATCH_PRINT ~Adding vertices to new door.~ END
+				WRITE_LONG fj_return_offset + 0x2c fj_vertex_idx
+				WRITE_LONG fj_return_offset + 0x34
+					LONG_AT (fj_return_offset + 0x2c) + SHORT_AT (fj_return_offset + 0x30)
+				WRITE_LONG fj_return_offset + 0x48
+					LONG_AT (fj_return_offset + 0x34) + SHORT_AT (fj_return_offset + 0x32)
+				WRITE_LONG fj_return_offset + 0x50
+					LONG_AT (fj_return_offset + 0x48) + SHORT_AT (fj_return_offset + 0x4c)
+
+				PHP_EACH ~are_container_%container_index%_vertex~ AS num => off BEGIN
+					INSERT_BYTES fj_position 0x04
+					WRITE_SHORT  0x80 THIS + 0x01
+				END
+				PHP_EACH ~are_container_%container_index%_vertex~ AS num => off BEGIN
+					WRITE_LONG fj_position off
+					SET fj_position += 0x04
+				END
+			END
+
+			PHP_EACH are_container AS num => structure BEGIN
+				CLEAR_ARRAY EVAL ~are_container_%num%_vertex~
+			END
+
+
+		END // adding vertices
+
+		// reinsert embedded creatures
+		PATCH_IF( key_0 == 0x54 )BEGIN
+			PHP_EACH are_embedded_cre AS num => value1 BEGIN
+				PATCH_IF( fj_structure_type == 0x54 && num == ` 0 && fj_deleted == 0x00 )BEGIN
+					SET fj_deleted = 0x01
+				END ELSE BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reassociating embedded creature to actor %num%.~ END
+					WRITE_LONG   LONG_AT 0x54 + ( num - fj_deleted ) * 0x110 + 0x88 fj_position
+					INSERT_BYTES fj_position LONG_AT ( LONG_AT 0x54 + ( num - fj_deleted ) * 0x110 + 0x8c )
+					WRITE_ASCIIE fj_position ~%value1%~
+					SET fj_position += LONG_AT (LONG_AT 0x54 + ( num - fj_deleted ) * 0x110 + 0x8c)
+				END
+			END
+			CLEAR_ARRAY are_embedded_cre
+			SET fj_deleted = 0x00
+			PATCH_IF( fj_structure_type == 0x54 && !( fj_loading & 0x01 ) )BEGIN
+				PATCH_IF( FILE_EXISTS ~%fj_cre_embedded%~ )BEGIN
+					SET off = BUFFER_LENGTH // we do a stupid dance here to avoid INNER_ACTION
+					APPEND_FILE_EVALUATE ~%fj_cre_embedded%~
+					READ_ASCII   off fj_cre_embedded ( BUFFER_LENGTH - off )
+					DELETE_BYTES off STRING_LENGTH EVAL ~%fj_cre_embedded%~
+				END ELSE PATCH_IF( FILE_EXISTS_IN_GAME ~%fj_cre_resref%.cre~ ) BEGIN
+					INNER_PATCH_FILE ~%fj_cre_resref%.cre~ BEGIN
+						READ_ASCII 0x00 fj_cre_embedded ( BUFFER_LENGTH )
+					END
+				END
+				PATCH_IF( ~%fj_cre_embedded%~ STR_CMP ~~ )BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Embedding creature to new actor.~ END
+					WRITE_LONG   fj_return_offset + 0x88 fj_position
+					WRITE_LONG   fj_return_offset + 0x8c STRING_LENGTH EVAL ~%fj_cre_embedded%~
+					INSERT_BYTES fj_position             LONG_AT (fj_return_offset + 0x8c)
+					WRITE_ASCIIE fj_position             ~%fj_cre_embedded%~
+					SET fj_position += LONG_AT ( fj_return_offset + 0x8c )
+				END ELSE BEGIN
+					WRITE_LONG   fj_return_offset + 0x28 THIS | 0x01 // if we didn't find a .cre, mark it unembedded
+				END
+			END
+		END ELSE
+
+		// reinsert embedded projectile effects
+		PATCH_IF( key_0 == 0xcc )BEGIN
+			PHP_EACH are_embedded_eff AS num => value1 BEGIN
+				PATCH_IF( fj_structure_type == 0xcc && ` 0 == num && fj_deleted == 0x00 )BEGIN
+					SET fj_deleted = 0x01
+				END ELSE BEGIN
+					PATCH_IF fj_debug BEGIN PATCH_PRINT ~Reassociating embedded effects to projectile %num%.~ END
+					WRITE_LONG   LONG_AT 0xcc + ( num - fj_deleted ) * 0x1c + 0x08 fj_position
+					INSERT_BYTES fj_position SHORT_AT (LONG_AT 0xcc + ( num - fj_deleted ) * 0x1c + 0x0c)
+					WRITE_ASCIIE fj_position ~%value1%~
+					SET fj_position += SHORT_AT (LONG_AT 0xcc + ( num - fj_deleted ) * 0x1c + 0x0c)
+				END
+			END
+			SET fj_deleted = 0x00
+			CLEAR_ARRAY are_embedded_eff
+			PATCH_IF( fj_structure_type == 0xcc )BEGIN
+				WRITE_LONG fj_return_offset + 0x08 fj_position
+				PHP_EACH fj_embedded_eff AS num => value1 BEGIN
+					PATCH_IF( FILE_EXISTS ~%value1%~ )BEGIN
+						SET off = BUFFER_LENGTH
+						APPEND_FILE_EVALUATE ~%value1%~
+						READ_ASCII   off + 0x08 value1 (0x108)
+						DELETE_BYTES off 0x110
+					END ELSE PATCH_IF( FILE_EXISTS_IN_GAME ~%value1%.eff~ )BEGIN
+						INNER_PATCH_FILE ~%value1%.eff~ BEGIN
+							READ_ASCII 0x08 value1 (0x108)
+						END
+					END ELSE BEGIN
+						TEXT_SPRINT value1 ~~
+					END
+					PATCH_IF( ~%value1%~ STR_CMP ~~ )BEGIN
+						PATCH_IF fj_debug BEGIN PATCH_PRINT ~Adding effect %num% to new embedded projectile.~ END
+						WRITE_SHORT  fj_return_offset + 0x0c THIS + 0x108
+						INSERT_BYTES fj_position 0x108
+						WRITE_ASCIIE fj_position ~%value1%~
+						SET fj_position += 0x108
+					END
+				END
+			END
+			CLEAR_ARRAY fj_embedded_eff
+		END
+
+	END // php $struct: everything added
+
+	// restoring Icewind Dale II's special snowflakiness
+	PATCH_IF is_id2 BEGIN
+		PATCH_FOR_EACH off IN
+			0x54 0x5c 0x60 0x68 0x70 0x78 0x7c 0x84
+			0x88 0xa0 0xa8 0xb0 0xb8 0xbc 0xc0
+		BEGIN
+			PATCH_IF LONG_AT off BEGIN
+				WRITE_LONG off THIS + 0x10
+			END
+		END
+		INSERT_BYTES 0x54 0x10
+		WRITE_ASCIIE 0x54 ~%id2_header%~
+		SET fj_return_offset += 0x10
+		GET_OFFSET_ARRAY fj_id_actor ARE_V91_ACTORS
+		PHP_EACH fj_id_actor AS key => value BEGIN
+			PATCH_IF(
+			LONG_AT( value + 0x88 ) > 0x00 &&
+			LONG_AT( value + 0x28 ) & 0x01 == 0x00
+			)BEGIN
+				WRITE_LONG value + 0x88 THIS + 0x10
+			END
+		END
+	END
+
+END

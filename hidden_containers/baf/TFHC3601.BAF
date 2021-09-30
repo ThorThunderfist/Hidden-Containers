@@ -1,0 +1,21 @@
+IF
+	OR(2)
+		Global("PirateTreasure","GLOBAL",1)
+		GlobalTimerNotExpired("Safana","GLOBAL")
+	OpenState("%door_name%", FALSE)
+THEN
+	RESPONSE #100
+		SetGlobal("%container_name%_detected", "%area_name%", 2)
+		ContainerEnable("%container_name%", TRUE)
+		OpenDoor("%door_name%")
+END
+
+IF
+	SecretDoorDetected("%door_name%", TRUE)
+	Global("%container_name%_detected", "%area_name%", 0)
+THEN
+	RESPONSE #100
+		SetGlobal("%container_name%_detected", "%area_name%", 1)
+		ContainerEnable("%container_name%", TRUE)
+		OpenDoor("%door_name%")
+END

@@ -1,0 +1,79 @@
+// Lovingly adapted from the built-in macro in cd_functions.tpa
+// Thank you WeiDU developers!
+
+DEFINE_PATCH_FUNCTION ALTER_AREA_CONTAINER_INDEX
+	INT_VAR
+		index            = ""   // required, used to match container
+		container_type   = "-1" // container type; icon displayed when opened at 0x24; negative values mean no change
+		trapped          = "-1" // is trapped? at 0x30; negative values mean no change
+		detected         = "-1" // is detected? at 0x32; negative values mean no change
+		lockpick_strref  = "-1" // lockpick string at 0x84; negative values mean no change
+		lock_difficulty  = "-1" // difficulty to pick lock at 0x26; negative values mean no change
+		trap_detect      = "-1" // difficulty to detect trap at 0x2c; negative values mean no change
+		trap_remove      = "-1" // difficulty to remove tap at 0x2e; negative values mean no change
+		// flag_ vars affect flags starting at 0x28; 0 means remove flag, 1 means add flag, -1 no change
+		flag_locked      = "-1" // locked, bit0
+		flag_mlocked     = "-1" // magical lock, bit2
+		flag_resets      = "-1" // trap resets, bit3
+		flag_disabled    = "-1" // disabled, bit5
+		coord_x          = "-1"
+		coord_y          = "-1"
+		launch_x         = "-1"
+		launch_y         = "-1"
+		bounding_left    = "-1"
+		bounding_top     = "-1"
+		bounding_right   = "-1"
+		bounding_bottom  = "-1"
+		range            = "-1"
+	STR_VAR
+		container_name   = "same"  // changes container name at 0x00; "same" means no change
+		container_script = "same" // changes container script at 0x48; "same" means no change
+		container_key    = "same" // changes container key 0x78; "same" means no change
+BEGIN
+	READ_ASCII 0x04 version (4)
+	PATCH_IF ("%version%" STRING_COMPARE_CASE "V9.1" = 0) BEGIN // iwd2, are v9.1
+		READ_LONG  0x80 cont_off
+		READ_SHORT 0x84 cont_num
+	END ELSE BEGIN
+		READ_LONG  0x70 cont_off
+		READ_SHORT 0x74 cont_num
+	END
+
+	PATCH_IF ("%container_name%" STRING_COMPARE_CASE "%same%") BEGIN
+		WRITE_ASCIIE (cont_off + (index * 0xc0)) "%container_name%" #32
+	END
+
+	PATCH_IF (container_type  >= 0) BEGIN WRITE_SHORT (cont_off + 0x24 + (index * 0xc0)) container_type  END
+	PATCH_IF (lock_difficulty >= 0) BEGIN WRITE_SHORT (cont_off + 0x26 + (index * 0xc0)) lock_difficulty END
+	PATCH_IF (trap_detect     >= 0) BEGIN WRITE_SHORT (cont_off + 0x2c + (index * 0xc0)) trap_detect     END
+	PATCH_IF (trap_remove     >= 0) BEGIN WRITE_SHORT (cont_off + 0x2e + (index * 0xc0)) trap_remove     END
+	PATCH_IF (trapped         >= 0) BEGIN WRITE_SHORT (cont_off + 0x30 + (index * 0xc0)) trapped         END
+	PATCH_IF (detected        >= 0) BEGIN WRITE_SHORT (cont_off + 0x32 + (index * 0xc0)) detected        END
+	PATCH_IF (lockpick_strref >= 0) BEGIN WRITE_LONG  (cont_off + 0x84 + (index * 0xc0)) lockpick_strref END
+
+	PATCH_IF (flag_locked   = 0) BEGIN WRITE_BYTE  (cont_off + 0x28 + (index * 0xc0)) THIS & `BIT0 END
+	PATCH_IF (flag_mlocked  = 0) BEGIN WRITE_BYTE  (cont_off + 0x28 + (index * 0xc0)) THIS & `BIT2 END
+	PATCH_IF (flag_resets   = 0) BEGIN WRITE_BYTE  (cont_off + 0x28 + (index * 0xc0)) THIS & `BIT3 END
+	PATCH_IF (flag_disabled = 0) BEGIN WRITE_BYTE  (cont_off + 0x28 + (index * 0xc0)) THIS & `BIT5 END
+	PATCH_IF (flag_locked   = 1) BEGIN WRITE_BYTE  (cont_off + 0x28 + (index * 0xc0)) THIS | BIT0  END
+	PATCH_IF (flag_mlocked  = 1) BEGIN WRITE_BYTE  (cont_off + 0x28 + (index * 0xc0)) THIS | BIT2  END
+	PATCH_IF (flag_resets   = 1) BEGIN WRITE_BYTE  (cont_off + 0x28 + (index * 0xc0)) THIS | BIT3  END
+	PATCH_IF (flag_disabled = 1) BEGIN WRITE_BYTE  (cont_off + 0x28 + (index * 0xc0)) THIS | BIT5  END
+
+	PATCH_IF ("%container_script%" STRING_COMPARE_CASE "same") BEGIN
+		WRITE_ASCIIE (cont_off + 0x48 + (index * 0xc0)) "%container_script%" #8
+	END
+	PATCH_IF ("%container_key%" STRING_COMPARE_CASE "same") BEGIN
+		WRITE_ASCIIE (cont_off + 0x78 + (index * 0xc0)) "%container_key%" #8
+	END
+
+	PATCH_IF (coord_x  >= 0)                BEGIN WRITE_SHORT (cont_off + 0x20 + (index * 0xc0)) coord_x         END
+	PATCH_IF (coord_y  >= 0)                BEGIN WRITE_SHORT (cont_off + 0x22 + (index * 0xc0)) coord_y         END
+	PATCH_IF (launch_x  >= 0)               BEGIN WRITE_SHORT (cont_off + 0x34 + (index * 0xc0)) launch_x        END
+	PATCH_IF (launch_y  >= 0)               BEGIN WRITE_SHORT (cont_off + 0x36 + (index * 0xc0)) launch_y        END
+	PATCH_IF (bounding_left  >= 0)          BEGIN WRITE_SHORT (cont_off + 0x38 + (index * 0xc0)) bounding_left   END
+	PATCH_IF (bounding_top  >= 0)           BEGIN WRITE_SHORT (cont_off + 0x3a + (index * 0xc0)) bounding_top    END
+	PATCH_IF (bounding_right  >= 0)         BEGIN WRITE_SHORT (cont_off + 0x3c + (index * 0xc0)) bounding_right  END
+	PATCH_IF (bounding_bottom  >= 0)        BEGIN WRITE_SHORT (cont_off + 0x3e + (index * 0xc0)) bounding_bottom END
+	PATCH_IF (range  >= 0)                  BEGIN WRITE_SHORT (cont_off + 0x56 + (index * 0xc0)) range           END
+END

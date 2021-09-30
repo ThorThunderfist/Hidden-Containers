@@ -1,0 +1,130 @@
+// Durlag's Roof
+//// Chimney - Rashad's Talon
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 40
+	STR_VAR
+		area            = ~AR0500~
+		container_0     = ~Chimney Container~
+END
+
+// Durlag's 1
+//// Hollow Post - Misc Magic
+LAF HIDE_CONTAINERS
+	INT_VAR
+		rename_index_0  = 20
+		detect_0        = 50
+	STR_VAR
+		area            = ~AR0511~
+		container_0     = ~Hidden Container 22~
+END
+
+// SW Baldur's Gate
+//// Fountain - Aquamarine
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 25
+	STR_VAR
+		area            = ~AR1100~
+		container_0     = ~Container 18~
+END
+
+// Balduran's Ship
+//// Cannon - Misc Magic
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 60
+	STR_VAR
+		area            = ~AR1501~
+		container_0     = ~Container 2~
+END
+
+// Balduran's Ship
+//// Cannon 2 - Magic Ammo
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 55
+	STR_VAR
+		area            = ~AR1503~
+		container_0     = ~Container 3~
+END
+
+// Friendly Arm Inn
+//// Tree Hole - Ring of Wizardry
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 75
+	STR_VAR
+		area            = ~AR2300~
+		container_0     = ~Container 1~
+END
+
+// Lion's Way
+//// Tree - Diamond
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 25
+	STR_VAR
+		area            = ~AR2700~
+		container_0     = ~Container 1~
+END
+
+// Coast Way
+//// Rock Hole - Ring of Protection +1
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 50
+	STR_VAR
+		area            = ~AR2800~
+		container_0     = ~Container 3~
+END
+
+// Lonely Peaks
+//// Rock - Water Opal
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 20
+	STR_VAR
+		area            = ~AR4400~
+		container_0     = ~Container 1~
+END
+
+// Nashkel
+//// Farm Hole - Ankheg Plate
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 50
+	STR_VAR
+		area            = ~AR4800~
+		container_0     = ~Container 7~
+END
+
+// Fire Leaf Forest
+//// Grove Hole - Cloudkill Scroll
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 60
+	STR_VAR
+		area            = ~AR5300~
+		container_0     = ~Container 1~
+END
+
+// Nashkel Mines
+//// Stump Hole - Wand of Frost
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 40
+	STR_VAR
+		area            = ~AR5400~
+		container_0     = ~Container 1~
+END
+
+// Gibberling Mountains
+//// Cliff Hole - Ring of Fire Resistance, Star Sapphire
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 75
+	STR_VAR
+		area            = ~AR5500~
+		container_0     = ~Container 1~
+END

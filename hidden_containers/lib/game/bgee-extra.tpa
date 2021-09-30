@@ -1,0 +1,149 @@
+// Helm & Cloak
+//// Painting - Helm of Balduran
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 90
+	STR_VAR
+		area            = ~AR0118~
+		container_0     = ~Container 4~
+END
+
+// Three Old Kegs
+//// Painting - Skull of Kereph
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 80
+	STR_VAR
+		area            = ~AR0120~
+		container_0     = ~Container 1~
+		script_0        = ~TFHC0120~
+END
+
+// Durlag's Basement
+//// Buried Chest - Star Sapphire, Ring of Protection
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 40
+	STR_VAR
+		area            = ~AR0501~
+		container_0     = ~Container 6~
+END
+
+// Durlag's 2
+//// Wall Vault - Scrolls
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 50
+	STR_VAR
+		area            = ~AR0512~
+		container_0     = ~Container37~
+END
+
+// Durlag's 4
+//// Forge - Wardstone, Magic Ammo, Potions
+//// Shrooms 1 - Potions
+//// Shrooms 2 - Bracers of Defense AC 8
+//// Shrooms 3 - Potions
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 45
+		detect_1        = 25
+		detect_2        = 35
+		detect_3        = 25
+	STR_VAR
+		area            = ~AR0514~
+		container_0     = ~Container 10~
+		container_1     = ~Shrooms 01~
+		container_2     = ~Shrooms 02~
+		container_3     = ~Shrooms 03~
+END
+
+// Candlekeep (Prologue)
+//// Hay Bale - Phlydia's Book
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 5
+	STR_VAR
+		area            = ~AR2600~
+		container_0     = ~Container 4~
+		script_0        = ~TFHCHAY~
+END
+
+// Candlekeep
+//// Pillow - Gold
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 15
+	STR_VAR
+		area            = ~AR2611~
+		container_0     = ~Container 6~
+END
+
+// Candlekeep (Chapter 6)
+//// Hay Bale - Phlydia's Book
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 5
+	STR_VAR
+		area            = ~AR2626~
+		container_0     = ~Container 4~
+		script_0        = ~TFHCHAY~
+END
+
+// Shipwreck Coast
+//// Shipwreck - Ring of Folly
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 25
+	STR_VAR
+		area            = ~AR3100~
+		container_0     = ~Container 1~
+		script_0        = ~TFHC3100~
+END
+
+// Black Alaric's Cave
+//// Buried Treasure - Con Tome, Cloak of the Wolf, Potions, Wand of Paralyzation
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 85
+	STR_VAR
+		area            = ~AR3601~
+		container_0     = ~Container 1~
+		script_0        = ~TFHC3601~
+END
+
+// Cloudpeaks
+//// Waterfall - Dead Cat
+LAF HIDE_CONTAINERS
+	INT_VAR
+		detect_0        = 25
+	STR_VAR
+		area            = ~AR5200~
+		container_0     = ~Container 2~
+END
+
+
+// 2200 (ioun squirrel)
+COPY
+	~hidden_containers/bmp~ override
+	~hidden_containers/bam~ override
+	~hidden_containers/eff~ override
+	~hidden_containers/vvc~ override
+	~hidden_containers/cre~ override
+COPY
+	~hidden_containers/itm/TFHCIOUN.ITM~ override
+	SAY NAME2 @0
+	SAY IDENTIFIED_DESC @1
+
+COPY_EXISTING ~AR2200.ARE~ override
+	LPF fj_are_structure
+		INT_VAR
+			fj_loc_x           = 985
+			fj_loc_y           = 250
+			fj_animation       = 50176
+			fj_schedule        = 1 << 22 | 1 << 23 | 1 << 0
+		STR_VAR
+			fj_structure_type  = ~actor~
+			fj_cre_resref      = ~TFHCSQRL~
+			fj_name            = ~Lucky Squirrel~
+	END

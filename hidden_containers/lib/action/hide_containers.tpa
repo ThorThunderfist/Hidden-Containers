@@ -1,0 +1,99 @@
+// Most arguments are handled as arrays so that multiple containers can be hidden in a single area
+// Containers are tracked by their NUM identifier across arrays
+DEFINE_ACTION_FUNCTION HIDE_CONTAINERS
+	// INT_VAR
+		// Optional
+		// In the event containers need to be renamed prior to patching,
+		// find them by index and rename then first
+		//
+		// rename_index_NUM
+
+		// Detection levels required to find the hidden containers
+		// 
+		// detect_NUM
+	STR_VAR
+		// .ARE where the containers are located
+		area = ~~
+
+		// Name of the containers to hide
+		//
+		// container_NUM
+
+		// .BAF to append to the area script, defaults to TFHCBASE
+		//
+		// script_NUM
+BEGIN
+	// Pull all "array" arguments into actual array variables and count containers to hide
+	OUTER_FOR (num = 0; VARIABLE_IS_SET EVAL ~container_%num%~; ++num)
+	BEGIN
+		OUTER_TEXT_SPRINT $EVAL container(~%num%~) EVAL ~%container_%num%%~
+		
+		ACTION_IF (VARIABLE_IS_SET EVAL ~script_%num%~) THEN
+		BEGIN
+			OUTER_TEXT_SPRINT $EVAL script(~%num%~) EVAL ~%script_%num%%~
+		END ELSE BEGIN
+			OUTER_TEXT_SPRINT $EVAL script(~%num%~) ~TFHCBASE~
+		END
+	END
+
+	OUTER_SET total = num
+
+	ACTION_FOR_EACH value IN rename_index detect
+	BEGIN
+		OUTER_FOR (i = 0; i < total; ++i)
+		BEGIN
+			ACTION_IF (VARIABLE_IS_SET EVAL ~%value%_%i%~) THEN
+			BEGIN
+				OUTER_SET $EVAL ~%value%~(~%i%~) = EVAL ~%value%_%i%~
+			END ELSE BEGIN
+				OUTER_SET $EVAL ~%value%~(~%i%~) = ` 0
+			END
+		END
+	END
+
+	COPY_EXISTING ~%area%.ARE~ override
+		FOR (i = 0; i < total; ++i)
+		BEGIN
+			PATCH_IF ($EVAL rename_index(~%i%~) >= 0) THEN
+			BEGIN
+				SET idx = $EVAL rename_index(~%i%~)
+				SPRINT cont $EVAL container(~%i%~)
+
+				LPF ALTER_AREA_CONTAINER_INDEX
+					INT_VAR
+						index           = idx
+					STR_VAR
+						container_name  = EVALUATE_BUFFER ~%cont%~
+				END
+			END
+		END
+
+		PHP_EACH container AS i => cont
+		BEGIN
+			SET det = $EVAL detect(~%i%~)
+			
+			LPF ALTER_AREA_HIDE_CONTAINER
+				INT_VAR
+					fj_detect_diff  = det
+				STR_VAR
+					container_name  = EVALUATE_BUFFER ~%cont%~
+			END
+		END
+
+		READ_ASCII AREA_SCRIPT area_script
+		PATCH_IF (~%area_script%~ STR_EQ ~~)
+		BEGIN
+			WRITE_ASCIIE AREA_SCRIPT ~%area%~
+		END
+
+	OUTER_FOR (i = 0; i < total; ++i)
+	BEGIN
+		OUTER_TEXT_SPRINT baf $EVAL script(~%i%~)
+
+		EXTEND_BOTTOM ~%area%.BCS~ ~hidden_containers/baf/%baf%.BAF~
+			SPRINT container_name $EVAL container(~%i%~)
+			SPRINT door_name ~TF%container_name%~
+			SPRINT area_name ~%area%~
+			EVALUATE_BUFFER
+	END
+END

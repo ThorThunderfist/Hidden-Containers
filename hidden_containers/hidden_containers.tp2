@@ -1,0 +1,49 @@
+// Many thanks to:
+// Ardanis, CamDawg
+
+BACKUP ~hidden_containers/backup~
+AUTHOR ~Thor Thunderfist~
+VERSION ~0.0.1~
+
+ALWAYS
+	INCLUDE ~hidden_containers/lib/patch/alter_area_container_index.tpa~
+	INCLUDE ~hidden_containers/lib/patch/alter_area_hide_container.tpa~
+	INCLUDE ~hidden_containers/lib/action/hide_containers.tpa~
+END
+
+LANGUAGE
+	~English~
+	~en-us~
+	~hidden_containers/lang/en-us/weidu.tra~
+	~hidden_containers/lang/en-us/game.tra~
+
+BEGIN @1001
+SUBCOMPONENT @1000
+	ACTION_IF GAME_IS ~bgee~ THEN BEGIN
+		INCLUDE ~hidden_containers/lib/game/bgee.tpa~
+	END
+
+	ACTION_IF GAME_IS ~bg2ee~ THEN BEGIN
+		INCLUDE ~hidden_containers/lib/game/bg2ee.tpa~
+	END
+
+	ACTION_IF GAME_IS ~iwdee~ THEN BEGIN
+		INCLUDE ~hidden_containers/lib/game/iwdee.tpa~
+	END
+
+BEGIN @1002
+SUBCOMPONENT @1000
+	ACTION_IF GAME_IS ~bgee~ THEN BEGIN
+		INCLUDE ~hidden_containers/lib/game/bgee.tpa~
+		INCLUDE ~hidden_containers/lib/game/bgee-extra.tpa~
+	END
+
+	ACTION_IF GAME_IS ~bg2ee~ THEN BEGIN
+		INCLUDE ~hidden_containers/lib/game/bg2ee.tpa~
+		INCLUDE ~hidden_containers/lib/game/bg2ee-extra.tpa~
+	END
+
+	ACTION_IF GAME_IS ~iwdee~ THEN BEGIN
+		INCLUDE ~hidden_containers/lib/game/iwdee.tpa~
+		INCLUDE ~hidden_containers/lib/game/iwdee-extra.tpa~
+	END

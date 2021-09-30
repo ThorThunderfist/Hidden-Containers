@@ -1,0 +1,18 @@
+IF
+	Global("HayFound","AR2600", 1)
+	OpenState("%door_name%", FALSE)
+THEN
+	RESPONSE #100
+		ContainerEnable("%container_name%", TRUE)
+		OpenDoor("%door_name%")
+END
+
+IF
+	SecretDoorDetected("%door_name%", TRUE)
+	Global("HayFound", "AR2600", 0)
+THEN
+	RESPONSE #100
+		SetGlobal("HayFound", "AR2600", 1)
+		ContainerEnable("%container_name%", TRUE)
+		OpenDoor("%door_name%")
+END
